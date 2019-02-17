@@ -6,6 +6,8 @@ const tools       = new Toolkit;
 const { payload } = tools.context;
 const commits     = payload.commits.filter(c => c.distinct);
 
+tools.log.info(commits);
+
 const FILES          = [];
 const FILES_MODIFIED = [];
 const FILES_ADDED    = [];
