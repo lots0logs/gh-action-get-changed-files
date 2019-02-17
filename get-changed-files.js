@@ -3,7 +3,7 @@ const fs          = require('fs');
 const { Toolkit } = require('actions-toolkit');
 
 const tools       = new Toolkit;
-const { payload } = tools.arguments;
+const { payload } = tools.context;
 const commits     = payload.commits.filter(c => c.distinct);
 
 const FILES          = [];
