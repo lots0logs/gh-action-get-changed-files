@@ -1,0 +1,8 @@
+{
+  "name": "gh-action-get-changed-files",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "actions-toolkit": "1.5.0"
+  }
+}
