@@ -6,26 +6,16 @@ const tools       = new Toolkit;
 const { payload } = tools.context;
 const commits     = payload.commits.filter(c => c.distinct);
 
-tools.log.info(commits);
-
 const FILES          = [];
 const FILES_MODIFIED = [];
 const FILES_ADDED    = [];
 const FILES_DELETED  = [];
 
-commits.forEach( async info => {
-	const args   = tools.context.repo({ commit_sha: info.sha });
-	const commit = await tools.github.getCommit(args);
-	
-	const files          = commit.files.map(f => f.filename);
-	const files_modified = commit.files.filter(f => 'modified' === f.status).map(f => f.filename);
-	const files_added    = commit.files.filter(f => 'added' === f.status).map(f => f.filename);
-	const files_deleted  = commit.files.filter(f => 'deleted' === f.status).map(f => f.filename);
-	
-	FILES.push(...files_modified, ...files_added);
-	FILES_MODIFIED.push(...files_modified);
-	FILES_ADDED.push(...files_added);
-	FILES_DELETED.push(...files_deleted);
+commits.forEach(commit => {
+	FILES.push(...commit.modified, ...commit.added);
+	FILES_MODIFIED.push(...commit.modified);
+	FILES_ADDED.push(...commit.added);
+	FILES_DELETED.push(...commit.removed);
 });
 
 fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(FILES), 'utf-8');
