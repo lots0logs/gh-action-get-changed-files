@@ -26,10 +26,10 @@ commits.forEach( async info => {
 	FILES_DELETED.push(...files_deleted);
 });
 
-fs.writeFileSync('/tmp/files.json', JSON.stringify(FILES), 'utf-8');
-fs.writeFileSync('/tmp/files_modified.json', JSON.stringify(FILES_MODIFIED), 'utf-8');
-fs.writeFileSync('/tmp/files_added.json', JSON.stringify(FILES_ADDED), 'utf-8');
-fs.writeFileSync('/tmp/files_deleted.json', JSON.stringify(FILES_DELETED), 'utf-8');
+fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(FILES), 'utf-8');
+fs.writeFileSync(`${process.env.HOME}/files_modified.json`, JSON.stringify(FILES_MODIFIED), 'utf-8');
+fs.writeFileSync(`${process.env.HOME}/files_added.json`, JSON.stringify(FILES_ADDED), 'utf-8');
+fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, JSON.stringify(FILES_DELETED), 'utf-8');
 
 process.exit(0);
 

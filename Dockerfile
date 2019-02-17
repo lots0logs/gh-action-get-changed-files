@@ -4,7 +4,7 @@ COPY . .
 
 RUN yarn
 
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT ["node", "/entrypoint.js"]
 
 LABEL maintainer='Dustin Falgout <dustin@falgout.us>'
 LABEL repository=https://github.com/lots0logs/gh-action-get-changed-files
