@@ -1,11 +1,9 @@
 # GitHub Action: Get Changed Files
-Saves changed files to the environment for use by other actions.
+Saves lists of changed files as JSON for use by other actions.
 
-### Environment Variables Set By This Action
+### JSON Files Created By This Action
 
-* `FILES`
-* `FILES_MODIFIED`
-* `FILES_ADDED`
-* `FILES_DELETED`
-
->***NOTE:*** Each value will be an array formatted as a JSON string
+* `${HOME}/files.json`
+* `${HOME}/files_modified.json`
+* `${HOME}/files_added.json`
+* `${HOME}/files_deleted.json`
