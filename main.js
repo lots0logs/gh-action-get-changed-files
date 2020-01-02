@@ -4,6 +4,8 @@ const gh = require('@actions/github');
 
 const payload = JSON.stringify(gh.context.payload, undefined, 2)
 
+console.log(payload);
+
 const commits = gh.context.payload.commits.filter(c => c.distinct);
 
 const FILES          = [];
