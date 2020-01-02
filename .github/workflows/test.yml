@@ -1,0 +1,6 @@
+name: Test Workflow
+on: pull_request
+jobs:
+  test:
+    - name: Get Changed Files
+      uses: foodee/gh-action-get-changed-files@master
