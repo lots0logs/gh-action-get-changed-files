@@ -1,9 +1,9 @@
 // External Dependencies
 const fs = require('fs');
 const gh = require('@actions/github');
+const core = require('@actions/core');
 
-
-const commits = gh.event.commits.filter(c => c.distinct);
+const commits = gh.context.commits.filter(c => c.distinct);
 
 const FILES          = [];
 const FILES_MODIFIED = [];
