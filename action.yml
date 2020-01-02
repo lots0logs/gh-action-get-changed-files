@@ -1,0 +1,9 @@
+name:        'Get Changed Files'
+description: 'Saves lists of changed files as JSON for use by other actions.'
+author:      'Dustin Falgout <dustin@falgout.us>'
+runs:
+  using: 'node12'
+  main:  'main.js'
+branding:
+  icon:  'search'
+  color: 'gray-dark'

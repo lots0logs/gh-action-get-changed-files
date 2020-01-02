@@ -1,10 +1,9 @@
 // External Dependencies
-const fs          = require('fs');
-const { Toolkit } = require('actions-toolkit');
+const fs = require('fs');
+const gh = require('@actions/github');
 
-const tools       = new Toolkit;
-const { payload } = tools.context;
-const commits     = payload.commits.filter(c => c.distinct);
+
+const commits = gh.event.commits.filter(c => c.distinct);
 
 const FILES          = [];
 const FILES_MODIFIED = [];
