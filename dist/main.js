@@ -3607,21 +3607,20 @@ async function processCommit(commit) {
 }
 
 
-Promise.all(commits.map(processCommit));
+Promise.all(commits.map(processCommit)).then(() => {
+	process.stdout.write(`::warning::${JSON.stringify(FILES, 4)}`);
+	process.stdout.write(`::set-output name=all::${JSON.stringify(FILES, 4)}`);
+	process.stdout.write(`::set-output name=added::${JSON.stringify(FILES_ADDED, 4)}`);
+	process.stdout.write(`::set-output name=deleted::${JSON.stringify(FILES_DELETED, 4)}`);
+	process.stdout.write(`::set-output name=modified::${JSON.stringify(FILES_MODIFIED, 4)}`);
 
-process.stdout.write(`::warning::${JSON.stringify(FILES, 4)}`);
-process.stdout.write(`::set-output name=all::${JSON.stringify(FILES, 4)}`);
-process.stdout.write(`::set-output name=added::${JSON.stringify(FILES_ADDED, 4)}`);
-process.stdout.write(`::set-output name=deleted::${JSON.stringify(FILES_DELETED, 4)}`);
-process.stdout.write(`::set-output name=modified::${JSON.stringify(FILES_MODIFIED, 4)}`);
+	fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(FILES), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_modified.json`, JSON.stringify(FILES_MODIFIED), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_added.json`, JSON.stringify(FILES_ADDED), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, JSON.stringify(FILES_DELETED), 'utf-8');
 
-fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(FILES), 'utf-8');
-fs.writeFileSync(`${process.env.HOME}/files_modified.json`, JSON.stringify(FILES_MODIFIED), 'utf-8');
-fs.writeFileSync(`${process.env.HOME}/files_added.json`, JSON.stringify(FILES_ADDED), 'utf-8');
-fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, JSON.stringify(FILES_DELETED), 'utf-8');
-
-process.exit(0);
-
+	process.exit(0);
+});
 
 
 /***/ }),
