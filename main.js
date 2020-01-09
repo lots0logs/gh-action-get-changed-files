@@ -13,22 +13,31 @@ const FILES_MODIFIED = [];
 const FILES_ADDED    = [];
 const FILES_DELETED  = [];
 
-const gh = new GitHub(core.getInput('token'));
+const gh   = new GitHub(core.getInput('token'));
+const args = { owner: org, repo };
 
-commits.forEach(commit => {
-	commit = gh.git.getCommit({ org, repo, commit_sha: commit.id });
+async function processCommit(commit) {
+	args.ref = commit.id;
+	result   = await gh.repo.getCommit(args);
 
-	process.stdout.write(`::warning::${JSON.stringify(commit, 4)}`);
+	if (result && result.data) {
+		const files = result.data.files;
 
-	commit.modified && FILES.push(...commit.modified);
-	commit.added && FILES.push(...commit.added);
+		files.modified && FILES.push(...files.modified);
+		files.added && FILES.push(...files.added);
 
-	commit.modified && FILES_MODIFIED.push(...commit.modified);
-	commit.added && FILES_ADDED.push(...commit.added);
-	commit.removed && FILES_DELETED.push(...commit.removed);
-});
+		files.modified && FILES_MODIFIED.push(...files.modified);
+		files.added && FILES_ADDED.push(...files.added);
+		files.removed && FILES_DELETED.push(...files.removed);
+	}
+}
 
-process.stdout.write(`::warning::${JSON.stringify(FILES, 4)}`);
+commits.forEach(processCommit);
+
+process.stdout.write(`::set-output name=all::${JSON.stringify(FILES, 4)}`);
+process.stdout.write(`::set-output name=added::${JSON.stringify(FILES_ADDED, 4)}`);
+process.stdout.write(`::set-output name=deleted::${JSON.stringify(FILES_DELETED, 4)}`);
+process.stdout.write(`::set-output name=modified::${JSON.stringify(FILES_MODIFIED, 4)}`);
 
 fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(FILES), 'utf-8');
 fs.writeFileSync(`${process.env.HOME}/files_modified.json`, JSON.stringify(FILES_MODIFIED), 'utf-8');
