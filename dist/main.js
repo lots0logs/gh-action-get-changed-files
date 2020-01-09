@@ -3562,7 +3562,7 @@ isStream.transform = function (stream) {
 const fs = __webpack_require__(747);
 const gh = __webpack_require__(469);
 
-process.stdout.write(`::debug::${JSON.stringify(gh, 4)}`);
+process.stdout.write(`::warning::${JSON.stringify(gh, 4)}`);
 
 const commits = gh.context.payload.event.commits.filter(c => c.distinct);
 
