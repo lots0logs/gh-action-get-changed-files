@@ -13,17 +13,16 @@ const FILES_MODIFIED = [];
 const FILES_ADDED    = [];
 const FILES_DELETED  = [];
 
-
-const gh = new GitHub(core.getInput('token'));
-
 commits.forEach(commit => {
-	commit = gh.git.getCommit({ org, repo, commit: commit.sha });
+	commit.modified && FILES.push(...commit.modified);
+	commit.added && FILES.push(...commit.added);
 
-	FILES.push(...commit.modified, ...commit.added);
-	FILES_MODIFIED.push(...commit.modified);
-	FILES_ADDED.push(...commit.added);
-	FILES_DELETED.push(...commit.removed);
+	commit.modified && FILES_MODIFIED.push(...commit.modified);
+	commit.added && FILES_ADDED.push(...commit.added);
+	commit.removed && FILES_DELETED.push(...commit.removed);
 });
+
+process.stdout.write(`::warning::${JSON.stringify(FILES, 4)}`);
 
 fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(FILES), 'utf-8');
 fs.writeFileSync(`${process.env.HOME}/files_modified.json`, JSON.stringify(FILES_MODIFIED), 'utf-8');
