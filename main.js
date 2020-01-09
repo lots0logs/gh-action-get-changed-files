@@ -17,7 +17,7 @@ const FILES_DELETED  = [];
 const gh = new GitHub(core.getInput('token'));
 
 commits.forEach(commit => {
-	commit = octokit.git.getCommit({ org, repo, commit.sha });
+	commit = gh.git.getCommit({ org, repo, commit: commit.sha });
 
 	FILES.push(...commit.modified, ...commit.added);
 	FILES_MODIFIED.push(...commit.modified);
