@@ -13,7 +13,11 @@ const FILES_MODIFIED = [];
 const FILES_ADDED    = [];
 const FILES_DELETED  = [];
 
+const gh = new GitHub(core.getInput('token'));
+
 commits.forEach(commit => {
+	commit = gh.git.getCommit({ org, repo, commit_sha: commit.sha });
+
 	commit.modified && FILES.push(...commit.modified);
 	commit.added && FILES.push(...commit.added);
 

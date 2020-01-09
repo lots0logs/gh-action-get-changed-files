@@ -4,6 +4,19 @@ author:      'Dustin Falgout <dustin@falgout.us>'
 runs:
   using: 'node12'
   main:  'dist/main.js'
+inputs:
+  token:
+    description: GitHub Personal Access Token
+    required:    true
+outputs:
+  all:
+    description: Array of all changed files (JSON string)
+  added:
+    description: Array of added files (JSON string)
+  deleted:
+    description: Array of deleted files (JSON string)
+  modified:
+    description: Array of modified files (JSON string)
 branding:
   icon:  'search'
   color: 'gray-dark'
