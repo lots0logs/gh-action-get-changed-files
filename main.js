@@ -1,17 +1,24 @@
 // External Dependencies
-const fs = require('fs');
-const gh = require('@actions/github');
+const fs                  = require('fs');
+const { context, GitHub } = require('@actions/github');
+const core                = require('@actions/core');
 
-process.stdout.write(`::warning::${JSON.stringify(gh, 4)}`);
 
-const commits = gh.context.payload.event.commits.filter(c => c.distinct);
+const commits = gh.context.payload.commits.filter(c => c.distinct);
+const repo    = gh.context.payload.repository.name;
+const org     = gh.context.payload.repository.organization;
 
 const FILES          = [];
 const FILES_MODIFIED = [];
 const FILES_ADDED    = [];
 const FILES_DELETED  = [];
 
+
+const gh = new GitHub(core.getInput('token'));
+
 commits.forEach(commit => {
+	commit = octokit.git.getCommit({ org, repo, commit.sha });
+
 	FILES.push(...commit.modified, ...commit.added);
 	FILES_MODIFIED.push(...commit.modified);
 	FILES_ADDED.push(...commit.added);
