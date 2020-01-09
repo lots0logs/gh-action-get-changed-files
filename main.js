@@ -4,9 +4,9 @@ const { context, GitHub } = require('@actions/github');
 const core                = require('@actions/core');
 
 
-const commits = gh.context.payload.commits.filter(c => c.distinct);
-const repo    = gh.context.payload.repository.name;
-const org     = gh.context.payload.repository.organization;
+const commits = context.payload.commits.filter(c => c.distinct);
+const repo    = context.payload.repository.name;
+const org     = context.payload.repository.organization;
 
 const FILES          = [];
 const FILES_MODIFIED = [];

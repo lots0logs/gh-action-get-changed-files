@@ -3564,9 +3564,9 @@ const { context, GitHub } = __webpack_require__(469);
 const core                = __webpack_require__(470);
 
 
-const commits = gh.context.payload.commits.filter(c => c.distinct);
-const repo    = gh.context.payload.repository.name;
-const org     = gh.context.payload.repository.organization;
+const commits = context.payload.commits.filter(c => c.distinct);
+const repo    = context.payload.repository.name;
+const org     = context.payload.repository.organization;
 
 const FILES          = [];
 const FILES_MODIFIED = [];
