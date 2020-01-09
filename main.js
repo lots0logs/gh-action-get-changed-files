@@ -1,13 +1,5 @@
 // External Dependencies
-const fs            = require('fs');
-const { spawnSync } = require('child_process');
-
-result = spawnSync('npm', ['install']);
-
-if (0 !== result.status) {
-  process.exit(1);
-}
-
+const fs = require('fs');
 const gh = require('@actions/github');
 
 
