@@ -18,6 +18,8 @@ const gh = new GitHub(core.getInput('token'));
 commits.forEach(commit => {
 	commit = gh.git.getCommit({ org, repo, commit_sha: commit.sha });
 
+	process.stdout.write(`::warning::${JSON.stringify(commit, 4)}`);
+
 	commit.modified && FILES.push(...commit.modified);
 	commit.added && FILES.push(...commit.added);
 
