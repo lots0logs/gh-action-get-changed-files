@@ -3563,7 +3563,7 @@ const fs = __webpack_require__(747);
 const gh = __webpack_require__(469);
 
 
-const commits = gh.event.commits.filter(c => c.distinct);
+const commits = gh.context.payload.event.commits.filter(c => c.distinct);
 
 const FILES          = [];
 const FILES_MODIFIED = [];
