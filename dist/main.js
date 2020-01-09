@@ -3596,12 +3596,12 @@ async function processCommit(commit) {
 		const files = result.data.files;
 
 		files.forEach( file => {
-			isModified(file) && FILES.push(...files.modified);
-			isAdded(file) && FILES.push(...files.added);
+			isModified(file) && FILES.push(file.filename);
+			isAdded(file) && FILES.push(file.filename);
 
-			isModified(file) && FILES_MODIFIED.push(...files.modified);
-			isAdded(file) && FILES_ADDED.push(...files.added);
-			isDeleted(file) && FILES_DELETED.push(...files.removed);
+			isModified(file) && FILES_MODIFIED.push(file.filename);
+			isAdded(file) && FILES_ADDED.push(file.filename);
+			isDeleted(file) && FILES_DELETED.push(file.filename);
 		});
 	}
 }
