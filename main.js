@@ -33,7 +33,7 @@ async function processCommit(commit) {
 }
 
 commits.forEach(processCommit);
-
+process.stdout.write(`::warning::${JSON.stringify(FILES, 4)}`);
 process.stdout.write(`::set-output name=all::${JSON.stringify(FILES, 4)}`);
 process.stdout.write(`::set-output name=added::${JSON.stringify(FILES_ADDED, 4)}`);
 process.stdout.write(`::set-output name=deleted::${JSON.stringify(FILES_DELETED, 4)}`);
