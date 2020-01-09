@@ -3606,7 +3606,8 @@ async function processCommit(commit) {
 	}
 }
 
-commits.forEach(processCommit);
+
+Promise.all(commits.map(processCommit));
 
 process.stdout.write(`::warning::${JSON.stringify(FILES, 4)}`);
 process.stdout.write(`::set-output name=all::${JSON.stringify(FILES, 4)}`);
