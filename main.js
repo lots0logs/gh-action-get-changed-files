@@ -16,7 +16,7 @@ const FILES_DELETED  = [];
 const gh = new GitHub(core.getInput('token'));
 
 commits.forEach(commit => {
-	commit = gh.git.getCommit({ org, repo, commit_sha: commit.sha });
+	commit = gh.git.getCommit({ org, repo, commit_sha: commit.id });
 
 	process.stdout.write(`::warning::${JSON.stringify(commit, 4)}`);
 
