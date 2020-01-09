@@ -2,6 +2,7 @@
 const fs = require('fs');
 const gh = require('@actions/github');
 
+process.stdout.write(`::debug::${JSON.stringify(gh, 4)}`);
 
 const commits = gh.context.payload.event.commits.filter(c => c.distinct);
 
