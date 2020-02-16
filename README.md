@@ -5,11 +5,11 @@ Saves lists of changed files in the `outputs` object and on the filesystem for u
 ```
 - uses: lots0logs/gh-action-get-changed-files@2.0.5
   with:
-    token: YOUR_PERSONAL_ACCESS_TOKEN
+    token: GITHUB_TOKEN
 ```
 
 ### Inputs
-* **`token`**: GitHub Personal Access Token
+* **`token`**: [The `GITHUB_TOKEN` secret](https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token).
 
 ### Outputs
 All output values are a single JSON encoded array.
