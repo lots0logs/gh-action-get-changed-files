@@ -3,10 +3,10 @@ const fs                  = require('fs');
 const { context, GitHub } = require('@actions/github');
 const core                = require('@actions/core');
 
-
 const commits = context.payload.commits.filter(c => c.distinct);
-const repo    = context.payload.repository.name;
-const org     = context.payload.repository.organization;
+const repo    = context.payload.repository;
+const org     = repo.organization;
+const owner   = org || repo.owner;
 
 const FILES          = [];
 const FILES_MODIFIED = [];
@@ -14,7 +14,7 @@ const FILES_ADDED    = [];
 const FILES_DELETED  = [];
 
 const gh   = new GitHub(core.getInput('token'));
-const args = { owner: org, repo };
+const args = { owner: owner.name, repo: repo.name };
 
 function isAdded(file) {
 	return 'added' === file.status;
