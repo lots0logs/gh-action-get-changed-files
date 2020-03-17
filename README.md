@@ -14,9 +14,10 @@ Saves lists of changed files in the `outputs` object and on the filesystem for u
 ### Outputs
 All output values are a single JSON encoded array.
 
-* **`all`**: Added, deleted, and modified files
+* **`all`**: Added, deleted, renamed and modified files
 * **`added`**: Added files
 * **`deleted`**: Deleted files
+* **`renamed`**: Renamed files
 * **`modified`**: Modified files
 
 ### JSON Files Created By This Action
@@ -25,3 +26,4 @@ All output values are a single JSON encoded array.
 * `${HOME}/files_modified.json`
 * `${HOME}/files_added.json`
 * `${HOME}/files_deleted.json`
+* `${HOME}/files_renamed.json`
