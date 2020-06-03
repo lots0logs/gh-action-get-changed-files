@@ -293,8 +293,7 @@ const core   = __webpack_require__(470);
 
 const context = github.context;
 const repo    = context.payload.repository;
-const org     = repo.organization;
-const owner   = org || repo.owner;
+const owner   = repo.owner;
 
 const FILES          = new Set();
 const FILES_MODIFIED = new Set();
