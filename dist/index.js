@@ -302,7 +302,7 @@ const FILES_DELETED  = new Set();
 const FILES_RENAMED  = new Set();
 
 const gh   = github.getOctokit(core.getInput('token'));
-const args = { owner: owner.name, repo: repo.name };
+const args = { owner: owner.name || owner.login, repo: repo.name };
 
 
 function debug(msg, obj = null) {
