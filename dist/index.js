@@ -362,7 +362,7 @@ function isRenamed(file) {
 async function processCommit(commit) {
 	debug('Processing commit', commit);
 
-	args.ref = commit.id;
+	args.ref = commit.id || commit.sha;
 
 	debug('Calling gh.repos.getCommit() with args', args)
 
@@ -394,9 +394,13 @@ debug('context', context);
 debug('args', args);
 
 getCommits().then(commits => {
-	commits = commits.filter(c => c.distinct);
+	debug('All Commits', commits);
 
-	debug('All Distinct Commits', commits);
+	if ('push' === context.eventName) {
+		commits = commits.filter(c => c.distinct);
+
+		debug('All Distinct Commits', commits);
+	}
 
 	Promise.all(commits.map(processCommit)).then(() => {
 		debug('FILES', FILES);
