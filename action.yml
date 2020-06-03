@@ -17,6 +17,8 @@ outputs:
     description: Array of deleted files (JSON string)
   modified:
     description: Array of modified files (JSON string)
+  renamed:
+    description: Array of renamed files (JSON string)
 branding:
   icon:  'search'
   color: 'gray-dark'
