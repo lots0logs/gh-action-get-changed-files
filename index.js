@@ -69,17 +69,17 @@ getCommits().then(commits => {
 	Promise.all(commits.map(processCommit)).then(() => {
 		core.debug(JSON.stringify(FILES, 4));
 
-		core.setOutput('all', JSON.stringify(FILES, 4));
-		core.setOutput('added', JSON.stringify(FILES_ADDED, 4));
-		core.setOutput('deleted', JSON.stringify(FILES_DELETED, 4));
-		core.setOutput('modified', JSON.stringify(FILES_MODIFIED, 4));
-		core.setOutput('renamed', JSON.stringify(FILES_RENAMED, 4));
+		core.setOutput('all', JSON.stringify(Array.from(FILES.values()), 4));
+		core.setOutput('added', JSON.stringify(Array.from(FILES_ADDED.values()), 4));
+		core.setOutput('deleted', JSON.stringify(Array.from(FILES_DELETED.values()), 4));
+		core.setOutput('modified', JSON.stringify(Array.from(FILES_MODIFIED.values()), 4));
+		core.setOutput('renamed', JSON.stringify(Array.from(FILES_RENAMED.values()), 4));
 
-		fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(FILES), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_modified.json`, JSON.stringify(FILES_MODIFIED), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_added.json`, JSON.stringify(FILES_ADDED), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, JSON.stringify(FILES_DELETED), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, JSON.stringify(FILES_RENAMED), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files.json`, JSON.stringify(Array.from(FILES.values())), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_modified.json`, JSON.stringify(Array.from(FILES_MODIFIED.values())), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_added.json`, JSON.stringify(Array.from(FILES_ADDED.values())), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, JSON.stringify(Array.from(FILES_DELETED.values())), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, JSON.stringify(Array.from(FILES_RENAMED.values())), 'utf-8');
 
 		process.exit(0);
 	});
