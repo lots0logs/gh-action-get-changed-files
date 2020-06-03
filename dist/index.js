@@ -390,6 +390,7 @@ function toJSON(value) {
 	return JSON.stringify(value, null, 4);
 }
 
+
 debug('context', context);
 debug('args', args);
 
@@ -403,7 +404,7 @@ getCommits().then(commits => {
 	}
 
 	Promise.all(commits.map(processCommit)).then(() => {
-		debug('FILES', FILES);
+		debug('FILES', Array.from(FILES.values()));
 
 		core.setOutput('all', toJSON(Array.from(FILES.values())));
 		core.setOutput('added', toJSON(Array.from(FILES_ADDED.values())));
