@@ -322,24 +322,39 @@ function isRenamed(file) {
 }
 
 async function getCommits() {
-	if ('push' === context.eventName) {
-		return context.payload.commits;
+	let commits;
 
-	} else if ('pull_request' === context.eventName) {
-		const url = context.payload.pull_request.commits_url;
+	core.debug('Getting commits...');
 
-		return gh.paginate(`GET ${url}`, args);
+	switch(context.eventName) {
+		case 'push':
+			commits = context.payload.commits;
+		break;
 
-	} else {
-		core.info('You are using this action on an event for which it has not been tested. Only the "push" and "pull_request" events are officially supported.');
+		case 'pull_request':
+			const url = context.payload.pull_request.commits_url;
 
-		return [];
+			commits = await gh.paginate(`GET ${url}`, args);
+		break;
+
+		default:
+			core.info('You are using this action on an event for which it has not been tested. Only the "push" and "pull_request" events are officially supported.');
+
+			commits = [];
+		break;
 	}
+
+	return commits;
 }
 
 async function processCommit(commit) {
+	core.debug(`Processing commit: ${JSON.stringify(commit, 4)}`);
+
 	args.ref = commit.id;
-	result   = await gh.repos.getCommit(args);
+
+	let result = await gh.repos.getCommit(args);
+
+	core.debug(`API Response: ${JSON.stringify(result, 4)}`);
 
 	if (result && result.data) {
 		const files = result.data.files;
@@ -359,6 +374,8 @@ async function processCommit(commit) {
 
 getCommits().then(commits => {
 	commits = commits.filter(c => c.distinct);
+
+	core.debug(`All Distinct Commits: ${JSON.stringify(commits, 4)}`);
 
 	Promise.all(commits.map(processCommit)).then(() => {
 		core.debug(JSON.stringify(FILES, 4));
