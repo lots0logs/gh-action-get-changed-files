@@ -1,8 +1,9 @@
 // External Dependencies
-const fs                  = require('fs');
-const { context, GitHub } = require('@actions/github');
-const core                = require('@actions/core');
+const fs     = require('fs');
+const github = require('@actions/github');
+const core   = require('@actions/core');
 
+const context = github.context;
 const repo    = context.payload.repository;
 const org     = repo.organization;
 const owner   = org || repo.owner;
@@ -13,7 +14,7 @@ const FILES_ADDED    = new Set();
 const FILES_DELETED  = new Set();
 const FILES_RENAMED  = new Set();
 
-const gh   = new GitHub(core.getInput('token'));
+const gh   = github.getOctokit(core.getInput('token'));
 const args = { owner: owner.name, repo: repo.name };
 
 function isAdded(file) {
@@ -39,7 +40,12 @@ async function getCommits() {
 	} else if ('pull_request' === context.eventName) {
 		const url = context.payload.pull_request.commits_url;
 
-		return gh.paginate(`GET ${url}`);
+		return gh.paginate(`GET ${url}`, args);
+
+	} else {
+		core.info('You are using this action on an event for which it has not been tested. Only the "push" and "pull_request" events are officially supported.');
+
+		return [];
 	}
 }
 
