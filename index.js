@@ -79,7 +79,7 @@ function isRenamed(file) {
 	return 'renamed' === file.status;
 }
 
-function outputResults() {
+async function outputResults() {
 	debug('FILES', Array.from(FILES.values()));
 
 	core.setOutput('all', toJSON(Array.from(FILES.values()), 0));
@@ -99,7 +99,7 @@ function outputResults() {
 	fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
 }
 
-function processCommitData(result) {
+async function processCommitData(result) {
 	debug('Processing API Response', result);
 
 	if (! result || ! result.data) {
@@ -156,8 +156,9 @@ getCommits().then(commits => {
 	}
 
 	Promise.all(commits.map(fetchCommitData))
-		.then(data => data.map(processCommitData))
+		.then(data => Promise.all(data.map(processCommitData)))
 		.then(outputResults)
-		.then(() => process.exit(0));
+		.then(() => process.exit(0))
+		.catch(err => core.error(err) && process.exit(1));
 });
 
