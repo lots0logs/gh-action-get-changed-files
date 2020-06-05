@@ -85,15 +85,33 @@ async function processCommit(commit) {
 	if (result && result.data) {
 		const files = result.data.files;
 
-		files.forEach( file => {
-			isModified(file) && FILES.add(file.filename);
-			isAdded(file) && FILES.add(file.filename);
-			isRenamed(file) && FILES.add(file.filename);
+		files.forEach(file => {
+			(isAdded(file) || isModified(file) || isRenamed(file)) && FILES.add(file.filename);
 
-			isModified(file) && FILES_MODIFIED.add(file.filename);
-			isAdded(file) && FILES_ADDED.add(file.filename);
-			isDeleted(file) && FILES_DELETED.add(file.filename);
-			isRenamed(file) && FILES_RENAMED.add(file.filename);
+			if (isAdded(file)) {
+				FILES_ADDED.add(file.filename);
+				FILES_DELETED.delete(file.filename);
+
+				return; // continue
+			}
+
+			if (isDeleted(file)) {
+				FILES_DELETED.add(file.filename);
+				FILES_ADDED.delete(file.filename);
+				FILES_MODIFIED.delete(file.filename);
+
+				return; // continue;
+			}
+
+			if (isModified(file)) {
+				FILES_MODIFIED.add(file.filename);
+
+				return; // continue;
+			}
+
+			if (isRenamed(file)) {
+				FILES_RENAMED.add(file.filename);
+			}
 		});
 	}
 }
