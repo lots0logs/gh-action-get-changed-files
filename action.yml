@@ -10,15 +10,15 @@ inputs:
     required:    true
 outputs:
   all:
-    description: Array of all changed files (JSON string)
+    description: JSON array of all changed files that weren't removed
   added:
-    description: Array of added files (JSON string)
-  deleted:
-    description: Array of deleted files (JSON string)
+    description: JSON array of added files
   modified:
-    description: Array of modified files (JSON string)
+    description: JSON array of modified files
   renamed:
-    description: Array of renamed files (JSON string)
+    description: JSON array of renamed files
+  removed:
+    description: JSON array of removed files
 branding:
   icon:  'search'
   color: 'gray-dark'

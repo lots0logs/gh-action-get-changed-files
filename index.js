@@ -8,9 +8,9 @@ const repo    = context.payload.repository;
 const owner   = repo.owner;
 
 const FILES          = new Set();
-const FILES_MODIFIED = new Set();
 const FILES_ADDED    = new Set();
-const FILES_DELETED  = new Set();
+const FILES_MODIFIED = new Set();
+const FILES_REMOVED  = new Set();
 const FILES_RENAMED  = new Set();
 
 const gh   = github.getOctokit(core.getInput('token'));
@@ -59,12 +59,12 @@ function isAdded(file) {
 	return 'added' === file.status;
 }
 
-function isDeleted(file) {
-	return 'deleted' === file.status;
-}
-
 function isModified(file) {
 	return 'modified' === file.status;
+}
+
+function isRemoved(file) {
+	return 'removed' === file.status;
 }
 
 function isRenamed(file) {
@@ -90,13 +90,13 @@ async function processCommit(commit) {
 
 			if (isAdded(file)) {
 				FILES_ADDED.add(file.filename);
-				FILES_DELETED.delete(file.filename);
+				FILES_REMOVED.delete(file.filename);
 
 				return; // continue
 			}
 
-			if (isDeleted(file)) {
-				FILES_DELETED.add(file.filename);
+			if (isRemoved(file)) {
+				FILES_REMOVED.add(file.filename);
 				FILES_ADDED.delete(file.filename);
 				FILES_MODIFIED.delete(file.filename);
 
@@ -116,8 +116,10 @@ async function processCommit(commit) {
 	}
 }
 
-function toJSON(value) {
-	return JSON.stringify(value, null, 4);
+function toJSON(value, pretty=true) {
+	return pretty
+		? JSON.stringify(value, null, 4)
+		: JSON.stringify(value);
 }
 
 
@@ -136,17 +138,21 @@ getCommits().then(commits => {
 	Promise.all(commits.map(processCommit)).then(() => {
 		debug('FILES', Array.from(FILES.values()));
 
-		core.setOutput('all', toJSON(Array.from(FILES.values())));
-		core.setOutput('added', toJSON(Array.from(FILES_ADDED.values())));
-		core.setOutput('deleted', toJSON(Array.from(FILES_DELETED.values())));
-		core.setOutput('modified', toJSON(Array.from(FILES_MODIFIED.values())));
-		core.setOutput('renamed', toJSON(Array.from(FILES_RENAMED.values())));
+		core.setOutput('all', toJSON(Array.from(FILES.values()), 0));
+		core.setOutput('added', toJSON(Array.from(FILES_ADDED.values()), 0));
+		core.setOutput('modified', toJSON(Array.from(FILES_MODIFIED.values()), 0));
+		core.setOutput('removed', toJSON(Array.from(FILES_REMOVED.values()), 0));
+		core.setOutput('renamed', toJSON(Array.from(FILES_RENAMED.values()), 0));
 
-		fs.writeFileSync(`${process.env.HOME}/files.json`, toJSON(Array.from(FILES.values())), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_modified.json`, toJSON(Array.from(FILES_MODIFIED.values())), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_added.json`, toJSON(Array.from(FILES_ADDED.values())), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, toJSON(Array.from(FILES_DELETED.values())), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, toJSON(Array.from(FILES_RENAMED.values())), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files.json`, toJSON(Array.from(FILES.values()), 0), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_added.json`, toJSON(Array.from(FILES_ADDED.values()), 0), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_modified.json`, toJSON(Array.from(FILES_MODIFIED.values()), 0), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_removed.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
+		fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, toJSON(Array.from(FILES_RENAMED.values()), 0), 'utf-8');
+
+		// Backwards Compatability
+		core.setOutput('deleted', toJSON(Array.from(FILES_REMOVED.values()), 0));
+		fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
 
 		process.exit(0);
 	});
