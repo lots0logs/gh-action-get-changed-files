@@ -1,6 +1,6 @@
 {
   "name": "gh-action-get-changed-files",
-  "version": "2.1.1rc2",
+  "version": "2.1.1rc3",
   "private": true,
   "main": "dist/index.js",
   "scripts":{

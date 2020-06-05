@@ -21,6 +21,14 @@ function debug(msg, obj = null) {
 	core.debug(formatLogMessage(msg, obj));
 }
 
+function fetchCommitData(commit) {
+	args.ref = commit.id || commit.sha;
+
+	debug('Calling gh.repos.getCommit() with args', args)
+
+	return gh.repos.getCommit(args);
+}
+
 function formatLogMessage(msg, obj = null) {
 	return obj ? `${msg}: ${toJSON(obj)}` : msg;
 }
@@ -71,49 +79,61 @@ function isRenamed(file) {
 	return 'renamed' === file.status;
 }
 
-async function processCommit(commit) {
-	debug('Processing commit', commit);
+function outputResults() {
+	debug('FILES', Array.from(FILES.values()));
 
-	args.ref = commit.id || commit.sha;
+	core.setOutput('all', toJSON(Array.from(FILES.values()), 0));
+	core.setOutput('added', toJSON(Array.from(FILES_ADDED.values()), 0));
+	core.setOutput('modified', toJSON(Array.from(FILES_MODIFIED.values()), 0));
+	core.setOutput('removed', toJSON(Array.from(FILES_REMOVED.values()), 0));
+	core.setOutput('renamed', toJSON(Array.from(FILES_RENAMED.values()), 0));
 
-	debug('Calling gh.repos.getCommit() with args', args)
+	fs.writeFileSync(`${process.env.HOME}/files.json`, toJSON(Array.from(FILES.values()), 0), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_added.json`, toJSON(Array.from(FILES_ADDED.values()), 0), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_modified.json`, toJSON(Array.from(FILES_MODIFIED.values()), 0), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_removed.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, toJSON(Array.from(FILES_RENAMED.values()), 0), 'utf-8');
 
-	let result = await gh.repos.getCommit(args);
+	// Backwards Compatability
+	core.setOutput('deleted', toJSON(Array.from(FILES_REMOVED.values()), 0));
+	fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
+}
 
-	debug('API Response', result);
+function processCommitData(result) {
+	debug('Processing API Response', result);
 
-	if (result && result.data) {
-		const files = result.data.files;
-
-		files.forEach(file => {
-			(isAdded(file) || isModified(file) || isRenamed(file)) && FILES.add(file.filename);
-
-			if (isAdded(file)) {
-				FILES_ADDED.add(file.filename);
-				FILES_REMOVED.delete(file.filename);
-
-				return; // continue
-			}
-
-			if (isRemoved(file)) {
-				FILES_REMOVED.add(file.filename);
-				FILES_ADDED.delete(file.filename);
-				FILES_MODIFIED.delete(file.filename);
-
-				return; // continue;
-			}
-
-			if (isModified(file)) {
-				FILES_MODIFIED.add(file.filename);
-
-				return; // continue;
-			}
-
-			if (isRenamed(file)) {
-				FILES_RENAMED.add(file.filename);
-			}
-		});
+	if (! result || ! result.data) {
+		return;
 	}
+
+	result.data.files.forEach(file => {
+		(isAdded(file) || isModified(file) || isRenamed(file)) && FILES.add(file.filename);
+
+		if (isAdded(file)) {
+			FILES_ADDED.add(file.filename);
+			FILES_REMOVED.delete(file.filename);
+
+			return; // continue
+		}
+
+		if (isRemoved(file)) {
+			FILES_REMOVED.add(file.filename);
+			FILES_ADDED.delete(file.filename);
+			FILES_MODIFIED.delete(file.filename);
+
+			return; // continue;
+		}
+
+		if (isModified(file)) {
+			FILES_MODIFIED.add(file.filename);
+
+			return; // continue;
+		}
+
+		if (isRenamed(file)) {
+			FILES_RENAMED.add(file.filename);
+		}
+	});
 }
 
 function toJSON(value, pretty=true) {
@@ -135,26 +155,9 @@ getCommits().then(commits => {
 		debug('All Distinct Commits', commits);
 	}
 
-	Promise.all(commits.map(processCommit)).then(() => {
-		debug('FILES', Array.from(FILES.values()));
-
-		core.setOutput('all', toJSON(Array.from(FILES.values()), 0));
-		core.setOutput('added', toJSON(Array.from(FILES_ADDED.values()), 0));
-		core.setOutput('modified', toJSON(Array.from(FILES_MODIFIED.values()), 0));
-		core.setOutput('removed', toJSON(Array.from(FILES_REMOVED.values()), 0));
-		core.setOutput('renamed', toJSON(Array.from(FILES_RENAMED.values()), 0));
-
-		fs.writeFileSync(`${process.env.HOME}/files.json`, toJSON(Array.from(FILES.values()), 0), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_added.json`, toJSON(Array.from(FILES_ADDED.values()), 0), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_modified.json`, toJSON(Array.from(FILES_MODIFIED.values()), 0), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_removed.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
-		fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, toJSON(Array.from(FILES_RENAMED.values()), 0), 'utf-8');
-
-		// Backwards Compatability
-		core.setOutput('deleted', toJSON(Array.from(FILES_REMOVED.values()), 0));
-		fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
-
-		process.exit(0);
-	});
+	Promise.all(commits.map(fetchCommitData))
+		.then(data => data.map(processCommitData))
+		.then(outputResults)
+		.then(() => process.exit(0));
 });
 
