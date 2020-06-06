@@ -88,15 +88,15 @@ async function outputResults() {
 	core.setOutput('removed', toJSON(Array.from(FILES_REMOVED.values()), 0));
 	core.setOutput('renamed', toJSON(Array.from(FILES_RENAMED.values()), 0));
 
-	fs.writeFileSync(`${process.env.HOME}/files.json`, toJSON(Array.from(FILES.values()), 0), 'utf-8');
-	fs.writeFileSync(`${process.env.HOME}/files_added.json`, toJSON(Array.from(FILES_ADDED.values()), 0), 'utf-8');
-	fs.writeFileSync(`${process.env.HOME}/files_modified.json`, toJSON(Array.from(FILES_MODIFIED.values()), 0), 'utf-8');
-	fs.writeFileSync(`${process.env.HOME}/files_removed.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
-	fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, toJSON(Array.from(FILES_RENAMED.values()), 0), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files.json`, toJSON(Array.from(FILES.values())), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_added.json`, toJSON(Array.from(FILES_ADDED.values())), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_modified.json`, toJSON(Array.from(FILES_MODIFIED.values())), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_removed.json`, toJSON(Array.from(FILES_REMOVED.values())), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_renamed.json`, toJSON(Array.from(FILES_RENAMED.values())), 'utf-8');
 
 	// Backwards Compatability
 	core.setOutput('deleted', toJSON(Array.from(FILES_REMOVED.values()), 0));
-	fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, toJSON(Array.from(FILES_REMOVED.values()), 0), 'utf-8');
+	fs.writeFileSync(`${process.env.HOME}/files_deleted.json`, toJSON(Array.from(FILES_REMOVED.values())), 'utf-8');
 }
 
 async function processCommitData(result) {
@@ -117,7 +117,10 @@ async function processCommitData(result) {
 		}
 
 		if (isRemoved(file)) {
-			FILES_REMOVED.add(file.filename);
+			if (! FILES_ADDED.has(file.filename)) {
+				FILES_REMOVED.add(file.filename);
+			}
+
 			FILES_ADDED.delete(file.filename);
 			FILES_MODIFIED.delete(file.filename);
 
@@ -147,18 +150,19 @@ debug('context', context);
 debug('args', args);
 
 getCommits().then(commits => {
-	debug('All Commits', commits);
+	// Exclude merge commits
+	commits = commits.filter(c => 1 === c.parents.length);
 
 	if ('push' === context.eventName) {
 		commits = commits.filter(c => c.distinct);
-
-		debug('All Distinct Commits', commits);
 	}
+
+	debug('All Commits', commits);
 
 	Promise.all(commits.map(fetchCommitData))
 		.then(data => Promise.all(data.map(processCommitData)))
 		.then(outputResults)
-		.then(() => process.exit(0))
-		.catch(err => core.error(err) && process.exit(1));
+		.then(() => process.exitCode = 0)
+		.catch(err => core.error(err) && (process.exitCode = 1));
 });
 
