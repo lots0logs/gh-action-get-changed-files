@@ -422,7 +422,7 @@ async function processCommitData(result) {
 		}
 
 		if (isRenamed(file)) {
-			processRenamedFile(file.filename, file.previous_filename);
+			processRenamedFile(file.previous_filename, file.filename);
 		}
 	});
 }
