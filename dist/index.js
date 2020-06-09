@@ -446,7 +446,7 @@ debug('args', args);
 
 getCommits().then(commits => {
 	// Exclude merge commits
-	commits = commits.filter(c => 1 === c.parents.length);
+	commits = commits.filter(c => ! c.parents || 1 === c.parents.length);
 
 	if ('push' === context.eventName) {
 		commits = commits.filter(c => c.distinct);
