@@ -134,9 +134,16 @@ async function processCommitData(result) {
 		}
 
 		if (isRenamed(file)) {
-			FILES_RENAMED.add(file.filename);
+			processRenamedFile(file.filename, file.previous_filename);
 		}
 	});
+}
+
+function processRenamedFile(prev_file, new_file) {
+	FILES.delete(prev_file) && FILES.add(new_file);
+	FILES_ADDED.delete(prev_file) && FILES_ADDED.add(new_file);
+	FILES_MODIFIED.delete(prev_file) && FILES_MODIFIED.add(new_file);
+	FILES_RENAMED.add(new_file);
 }
 
 function toJSON(value, pretty=true) {
