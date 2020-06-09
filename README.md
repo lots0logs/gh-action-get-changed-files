@@ -3,7 +3,7 @@ Saves lists of changed files in the `outputs` object and on the filesystem for u
 
 ### Workflow Config Example
 ```
-- uses: lots0logs/gh-action-get-changed-files@2.1.3
+- uses: lots0logs/gh-action-get-changed-files@2.1.4
   with:
     token: GITHUB_TOKEN
 ```
