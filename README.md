@@ -5,7 +5,7 @@ Saves lists of changed files in the `outputs` object and on the filesystem for u
 ```
 - uses: lots0logs/gh-action-get-changed-files@2.1.4
   with:
-    token: GITHUB_TOKEN
+    token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Inputs
