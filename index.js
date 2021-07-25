@@ -43,6 +43,7 @@ async function getCommits() {
 			commits = context.payload.commits;
 		break;
 
+		case 'pull_request_target':
 		case 'pull_request':
 			const url = context.payload.pull_request.commits_url;
 
