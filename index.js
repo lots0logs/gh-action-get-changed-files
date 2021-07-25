@@ -51,7 +51,7 @@ async function getCommits() {
 		break;
 
 		default:
-			info('You are using this action on an event for which it has not been tested. Only the "push" and "pull_request" events are officially supported.');
+			info('You are using this action on an event for which it has not been tested. Only the "push", "pull_request" and "pull_request_target" events are officially supported.');
 
 			commits = [];
 		break;
