@@ -3,7 +3,7 @@ description: 'Saves lists of changed files as JSON for use by other actions.'
 author:      'Dustin Falgout <dustin@falgout.us>'
 runs:
   using: 'node16'
-  main:  'dist/index.js'
+  main:  'index.js'
 inputs:
   token:
     description: GitHub Personal Access Token
