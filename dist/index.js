@@ -13097,7 +13097,7 @@ function fetchCommitData(commit) {
 
 	debug('Calling gh.repos.getCommit() with args', args)
 
-	return gh.repos.getCommit(args);
+	return gh.rest.repos.getCommit(args);
 }
 
 function formatLogMessage(msg, obj = null) {
