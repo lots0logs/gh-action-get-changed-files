@@ -50,6 +50,12 @@ async function getCommits() {
 			commits = await gh.paginate(`GET ${url}`, args);
 		break;
 
+		case 'issue_comment':
+			const pr_url = context.payload.issue.pull_request.url;
+
+			commits = await gh.paginate(`GET ${pr_url}/commits`, args);
+		break;
+
 		default:
 			info('You are using this action on an event for which it has not been tested. Only the "push", "pull_request" and "pull_request_target" events are officially supported.');
 
