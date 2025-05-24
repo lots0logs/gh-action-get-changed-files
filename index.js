@@ -108,7 +108,7 @@ async function processCommitData(result) {
 	}
 
 	result.data.files.forEach(file => {
-		(isAdded(file) || isModified(file) || isRenamed(file)) && FILES.add(file.filename);
+		(isAdded(file) || isRemoved(file) || isModified(file) || isRenamed(file)) && FILES.add(file.filename);
 
 		if (isAdded(file)) {
 			FILES_ADDED.add(file.filename);
